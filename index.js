@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const app=express();
-const port=process.env.PORT || 5000;
+const app = express();
+const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 
@@ -12,8 +12,8 @@ app.use(cors())
 
 
 
-app.get('/',(req,res)=>{
-    res.send('Career Builder sever is running')
+app.get('/', (req, res) => {
+  res.send('Career Builder sever is running')
 })
 
 
@@ -34,20 +34,20 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const categoryCollection=client.db('careerBuilder').collection('jobCategorys')
-    const jobCollection=client.db('careerBuilder').collection('jobs')
+    const categoryCollection = client.db('careerBuilder').collection('jobCategorys')
+    const jobCollection = client.db('careerBuilder').collection('jobs')
 
-    app.get('/categories',async(req,res)=>{
-        const cursor=categoryCollection.find()
-        const result=await cursor.toArray()
-        res.send(result)
+    app.get('/categories', async (req, res) => {
+      const cursor = categoryCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
 
     })
 
-    app.post('/jobs',async(req,res)=>{
-      const job=req.body
+    app.post('/jobs', async (req, res) => {
+      const job = req.body
       console.log(job)
-      const result=await jobCollection.insertOne(job)
+      const result = await jobCollection.insertOne(job)
       res.send(result)
     })
 
@@ -56,36 +56,66 @@ async function run() {
       console.log(req.query.jobCategory)
       let query = {};
       if (req.query?.jobCategory) {
-          query = {
-              jobCategory: req.query.jobCategory
-          }
+        query = {
+          jobCategory: req.query.jobCategory
+        }
       }
       const cursor = jobCollection.find(query);
       const result = await cursor.toArray()
       res.send(result);
-  })
+    })
 
     app.get('/jobs', async (req, res) => {
 
       console.log(req.query.email)
       let query = {};
       if (req.query?.email) {
-          query = {
-              jobCategory: req.query.email
-          }
+        query = {
+          jobCategory: req.query.email
+        }
       }
       const cursor = jobCollection.find(query);
       const result = await cursor.toArray()
       res.send(result);
-  })
+    })
 
-  app.delete('/jobs/:id',async(req,res)=>{
-    const id=req.params.id
-    const query={_id : new ObjectId (id)}
-    const result =await jobCollection.deleteOne(query)
-    res.send(result)
-  })
+    app.delete('/jobs/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await jobCollection.deleteOne(query)
+      res.send(result)
+    })
 
+    app.get('/jobs/:id',async(req,res)=>{
+      const id=req.params.id
+      const query={_id: new ObjectId(id)}
+      const result= await jobCollection.findOne(query)
+      res.send(result)
+    })
+
+    app.put('/jobs/:id', async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+        const options = { upsert: true }
+        const updatedJob = req.body
+        const job = {
+          $set: {
+            jobTitle:updatedJob.jobTitle,
+            userName:updatedJob.userName, 
+            jobCategory:updatedJob.jobCategory, 
+            salaryRange:updatedJob.salaryRange, 
+            jobDescription:updatedJob.jobDescription, 
+            jobPostingDate:updatedJob.jobPostingDate, 
+            applicationDeadline:updatedJob.applicationDeadline, 
+            jobApplicantsNumber:updatedJob.jobApplicantsNumber, 
+            photo:updatedJob.photo
+          }
+
+        }
+
+      const result = await jobCollection.updateOne(filter,job,options)
+      res.send(result)
+    })
 
 
 
@@ -101,6 +131,6 @@ run().catch(console.dir);
 
 
 
-app.listen(port,()=>{
-    console.log(`server is running on PORT : ${port}`)
+app.listen(port, () => {
+  console.log(`server is running on PORT : ${port}`)
 })
