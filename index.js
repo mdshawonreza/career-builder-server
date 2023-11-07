@@ -119,6 +119,7 @@ async function run() {
       const cursor=jobCollection.find()
       const result=await cursor.toArray()
       res.send(result)
+      
     })
 
 
