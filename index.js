@@ -163,18 +163,12 @@ async function run() {
     })
 
 
-    // app.get('/appliedJobs',async(req,res)=>{
-    //   const cursor=appliedJobCollection.find()
-    //   const result=await cursor.toArray()
-    //   res.send(result)
-    // })
+    
 
     app.get('/appliedJobs', async (req, res) => {
 
       console.log(req.query.email)
-      // if (res.user.email!==res.query.email) {
-      //   return res.status(403).send({message:'forbidden access'})
-      // }
+     
       let query = {};
       if (req.query?.email) {
         query = {email:req.query.email}
