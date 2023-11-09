@@ -99,9 +99,7 @@ async function run() {
     app.get('/jobs', async (req, res) => {
 
       console.log(req.query.email)
-      // if (res.user.email!==res.query.email) {
-      //   return res.status(403).send({message:'forbidden access'})
-      // }
+     
       let query = {};
       if (req.query?.email) {
         query = { email:req.query.email}
